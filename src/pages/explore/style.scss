@@ -1,0 +1,118 @@
+@import "../../mixins.scss";
+.explorePage {
+  min-height: 700px;
+  padding-top: 100px;
+  direction: rtl;
+  .resultNotFound {
+    font-size: 24px;
+    color: var(--black-light);
+  }
+  .pageHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    flex-direction: column;
+    @include md {
+      flex-direction: row;
+    }
+  }
+  .pageTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 24px;
+    line-height: 34px;
+    color: white;
+    margin-bottom: 20px;
+    @include md {
+      margin-bottom: 0;
+    }
+  }
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    @include md {
+      flex-direction: row;
+    }
+    .react-select-container {
+      &.genresDD {
+        width: clamp(250px, 80vw, 400px);
+        @include md {
+          max-width: 500px;
+          min-width: 250px;
+        }
+      }
+      &.sortbyDD {
+        width: clamp(250px, 80vw, 400px);
+        flex-shrink: 0;
+        @include md {
+          width: 250px;
+        }
+      }
+      .react-select__control {
+        border: 0;
+        outline: 0;
+        box-shadow: none;
+        background-color: var(--black-light);
+        border-radius: 20px;
+        .react-select__value-container {
+          .react-select__placeholder,
+          .react-select__input-container {
+            color: white;
+            margin: 0 10px;
+          }
+        }
+        .react-select__single-value {
+          color: white;
+        }
+        .react-select__multi-value {
+          background-color: var(--black3);
+          border-radius: 10px;
+          .react-select__multi-value__label {
+            color: white;
+          }
+          .react-select__multi-value__remove {
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+            &:hover {
+              color: var(--black-lighter);
+            }
+          }
+        }
+      }
+      .react-select__menu {
+        top: 40px;
+        margin: 0;
+        padding: 0;
+        border-radius: 1rem;
+        background-color: #173d77;
+        overflow: hidden;
+      }
+    }
+    .react-select__option {
+      background-color: #173d77;
+      color: white;
+      border-radius: 2rem;
+
+      &--is-focused {
+        background-color: #345f9f;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 10px;
+    margin-bottom: 50px;
+    @include md {
+      gap: 20px;
+    }
+    .movieCard {
+      .posterBlock {
+        margin-bottom: 30px;
+      }
+    }
+  }
+}
