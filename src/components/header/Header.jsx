@@ -52,7 +52,11 @@ const Header = () => {
   }, [lastScrollY]);
 
   const openSearch = () => {
-    setMobileMenu(false);
+    setTimeout(() => {
+      setMobileMenu(false);
+    }, 250);
+    setShowMobileMenu("false");
+    setMenuOpen(false);
     setShowSearch("true");
   };
 
@@ -84,7 +88,11 @@ const Header = () => {
     } else {
       navigate("/explore/tv");
     }
-    setMobileMenu(false);
+    setTimeout(() => {
+      setMobileMenu(false);
+    }, 250);
+    setShowMobileMenu("false");
+    setMenuOpen(false);
   };
 
   return (
@@ -127,44 +135,15 @@ const Header = () => {
         </ul>
 
         <div className="mobileMenuItems">
-          {/* {mobileMenu ? (
-            <VscChromeClose
-              onClick={() => {
-                setTimeout(() => {
-                  setMobileMenu(false);
-                }, 250);
-                setShowMobileMenu("false");
-              }}
-            />
-          ) : (
-            // <SlMenu onClick={openMobileMenu} />
-            <Hamburger
-              onToggle={(toggled) => {
-                if (toggled) {
-                  openMobileMenu;
-                } else {
-                  setTimeout(() => {
-                    setMobileMenu(false);
-                  }, 250);
-                  setShowMobileMenu("false");
-                }
-              }}
-              toggled={isMenuOpen}
-              toggle={setMenuOpen}
-              color="white"
-            />
-          )} */}
           <Hamburger
             onToggle={(toggled) => {
               if (toggled) {
                 openMobileMenu();
-                console.log("opened");
               } else {
                 setTimeout(() => {
                   setMobileMenu(false);
                 }, 250);
                 setShowMobileMenu("false");
-                console.log("closed");
               }
             }}
             toggled={isMenuOpen}
