@@ -16,6 +16,7 @@ const Header = () => {
   const [show, setShow] = useState("top");
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState("null");
   const [query, setQuery] = useState("");
   const [showSearch, setShowSearch] = useState("null");
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const Header = () => {
 
   const openMobileMenu = () => {
     setMobileMenu(true);
+    setShowMobileMenu("true");
     if (showSearch !== "null") {
       setShowSearch("false");
     }
@@ -87,7 +89,15 @@ const Header = () => {
   return (
     <header className={`header ${mobileMenu ? "mobileView" : ""} ${show}`}>
       <ContentWrapper>
-        <ul className="menuItems">
+        <ul
+          className={`menuItems ${
+            showMobileMenu === "null"
+              ? ""
+              : showMobileMenu === "true"
+              ? "showMobileView"
+              : "hideMobileView"
+          }`}
+        >
           <li className="menuItem">
             <HiOutlineSearch onClick={openSearch} />
           </li>
@@ -119,7 +129,10 @@ const Header = () => {
           {mobileMenu ? (
             <VscChromeClose
               onClick={() => {
-                setMobileMenu(false);
+                setTimeout(() => {
+                  setMobileMenu(false);
+                }, 250);
+                setShowMobileMenu("false");
               }}
             />
           ) : (

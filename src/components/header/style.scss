@@ -120,7 +120,6 @@
       width: 100%;
       padding: 20px 0;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      animation: mobileMenu 0.75s ease forwards;
       .menuItem {
         font-size: 20px;
         width: 100%;
@@ -139,6 +138,12 @@
         display: none;
       }
     }
+  }
+  .showMobileView {
+    animation: show 0.75s ease forwards;
+  }
+  .hideMobileView {
+    animation: hide 1.5s ease forwards;
   }
   .hideSearch {
     animation: hide 0.75s ease forwards;
@@ -212,15 +217,5 @@
   100% {
     transform: translateY(-230%);
     opacity: 0;
-  }
-}
-@keyframes mobileMenu {
-  0% {
-    transform: translateY(-130%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0%);
-    opacity: 1;
   }
 }
