@@ -71,23 +71,30 @@
         color: var(--pink);
       }
       svg {
-        font-size: 22px;
+        font-size: 24px;
       }
     }
   }
   .header-button {
     display: flex;
+    align-items: center;
     flex-direction: row-reverse;
     gap: 0.25rem;
     font: inherit;
     color: white;
     border: none;
-    padding: 0.5rem 1.25rem;
+    padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     cursor: pointer;
     transition: 0.5s;
     background: linear-gradient(90deg, #f89e00, #da2f68 51%, #f89e00)
       var(--x, 0%) / 200%;
+    @include md {
+      font-size: 20px;
+    }
+    svg {
+      font-size: 24px;
+    }
   }
 
   .header-button:hover {
@@ -102,7 +109,7 @@
       display: none;
     }
     svg {
-      font-size: 18px;
+      font-size: 24px;
       color: white;
     }
   }
@@ -165,7 +172,7 @@
       margin-top: 10px;
       width: 100%;
       svg {
-        font-size: 20px;
+        font-size: 24px;
         flex-shrink: 0;
         margin-left: 10px;
         cursor: pointer;

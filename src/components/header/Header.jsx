@@ -5,7 +5,7 @@ import { VscChromeClose } from "react-icons/vsc";
 import { MdSlideshow, MdOutlineMovie } from "react-icons/md";
 import { FiLogIn } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { Squash as Hamburger } from "hamburger-react";
 import "./style.scss";
 
 import ContentWrapper from "../contentWrapper/ContentWrapper";
@@ -17,6 +17,7 @@ const Header = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState("null");
+  const [isMenuOpen, setMenuOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [showSearch, setShowSearch] = useState("null");
   const navigate = useNavigate();
@@ -126,7 +127,7 @@ const Header = () => {
         </ul>
 
         <div className="mobileMenuItems">
-          {mobileMenu ? (
+          {/* {mobileMenu ? (
             <VscChromeClose
               onClick={() => {
                 setTimeout(() => {
@@ -136,8 +137,41 @@ const Header = () => {
               }}
             />
           ) : (
-            <SlMenu onClick={openMobileMenu} />
-          )}
+            // <SlMenu onClick={openMobileMenu} />
+            <Hamburger
+              onToggle={(toggled) => {
+                if (toggled) {
+                  openMobileMenu;
+                } else {
+                  setTimeout(() => {
+                    setMobileMenu(false);
+                  }, 250);
+                  setShowMobileMenu("false");
+                }
+              }}
+              toggled={isMenuOpen}
+              toggle={setMenuOpen}
+              color="white"
+            />
+          )} */}
+          <Hamburger
+            onToggle={(toggled) => {
+              if (toggled) {
+                openMobileMenu();
+                console.log("opened");
+              } else {
+                setTimeout(() => {
+                  setMobileMenu(false);
+                }, 250);
+                setShowMobileMenu("false");
+                console.log("closed");
+              }
+            }}
+            toggled={isMenuOpen}
+            toggle={setMenuOpen}
+            color="white"
+            size={24}
+          />
           <HiOutlineSearch onClick={openSearch} />
           <button className="header-button">
             <FiLogIn />
