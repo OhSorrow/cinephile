@@ -52,11 +52,13 @@ const Header = () => {
   }, [lastScrollY]);
 
   const openSearch = () => {
-    setTimeout(() => {
-      setMobileMenu(false);
-    }, 250);
-    setShowMobileMenu("false");
-    setMenuOpen(false);
+    if (showMobileMenu != "null") {
+      setTimeout(() => {
+        setMobileMenu(false);
+      }, 250);
+      setShowMobileMenu("false");
+      setMenuOpen(false);
+    }
     setShowSearch("true");
   };
 
@@ -88,11 +90,14 @@ const Header = () => {
     } else {
       navigate("/explore/tv");
     }
-    setTimeout(() => {
-      setMobileMenu(false);
-    }, 250);
-    setShowMobileMenu("false");
+    if (showMobileMenu != "null") {
+      setTimeout(() => {
+        setMobileMenu(false);
+      }, 250);
+      setShowMobileMenu("false");
+    }
     setMenuOpen(false);
+    setShowSearch("false");
   };
 
   return (
