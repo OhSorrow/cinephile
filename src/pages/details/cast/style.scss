@@ -73,13 +73,11 @@
     }
     .skItem {
       .circle {
-        width: 125px;
-        height: 125px;
-        border-radius: 50%;
+        width: 140px;
+        height: 210px;
+        border-radius: 12px;
         margin-bottom: 15px;
         @include md {
-          width: 175px;
-          height: 175px;
           margin-bottom: 25px;
         }
       }
