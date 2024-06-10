@@ -11,6 +11,7 @@ import Details from "./pages/details/Details";
 import SearchResult from "./pages/searchResult/SearchResult";
 import Explore from "./pages/explore/Explore";
 import PageNotFound from "./pages/404/PageNotFound";
+import Account from "./pages/account/Account";
 import LoadingBar from "react-top-loading-bar";
 
 function App() {
@@ -18,17 +19,14 @@ function App() {
   const dispatch = useDispatch();
 
   const { url } = useSelector((state) => state.home);
-  // console.log(url);
 
   useEffect(() => {
-    fetchApiConfig(); //invoke method
+    fetchApiConfig();
     genresCall();
-  }, []); //[]-dependency
+  }, []);
 
   const fetchApiConfig = () => {
     fetchDataFromApi("/configuration").then((res) => {
-      // console.log(res);
-
       const url = {
         backdrop: res.images.secure_base_url + "original",
         poster: res.images.secure_base_url + "original",
@@ -39,7 +37,6 @@ function App() {
     });
   };
 
-  //use promises because 2 request should send to server to get 2 responses at the same time.
   const genresCall = async () => {
     let promises = [];
     let endPoints = ["tv", "movie"];
@@ -50,14 +47,13 @@ function App() {
     });
 
     const data = await Promise.all(promises);
-    // console.log(data);
     data.map(({ genres }) => {
       return genres.map((item) => (allGenres[item.id] = item));
     });
 
-    //store genres in redux store
     dispatch(getGenres(allGenres));
   };
+
   return (
     <BrowserRouter>
       <LoadingBar
@@ -84,6 +80,10 @@ function App() {
         <Route
           path="/explore/:mediaType"
           element={<Explore setProgress={setProgress} />}
+        />
+        <Route
+          path="/account"
+          element={<Account setProgress={setProgress} />}
         />
         <Route path="*" element={<PageNotFound />} />
       </Routes>

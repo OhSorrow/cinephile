@@ -4,15 +4,16 @@ import { SlMenu } from "react-icons/sl";
 import { VscChromeClose } from "react-icons/vsc";
 import { MdSlideshow, MdOutlineMovie } from "react-icons/md";
 import { FiLogIn } from "react-icons/fi";
+import { FaUser } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Squash as Hamburger } from "hamburger-react";
 import "./style.scss";
 
 import ContentWrapper from "../contentWrapper/ContentWrapper";
 import logo from "../../assets/cinephile.png";
+import { getRequestToken, getSessionId } from "../../utils/api";
 
 const Header = () => {
-  //states creating
   const [show, setShow] = useState("top");
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -23,7 +24,6 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  //all new pages start showing top
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
@@ -71,7 +71,6 @@ const Header = () => {
   };
 
   const searchQueryHandler = (event) => {
-    //if user type search query and press enter, and search query not empty, then api call
     if (event.key === "Enter" && query.length > 0) {
       navigate(`/search/${query}`);
 
@@ -97,7 +96,24 @@ const Header = () => {
       setShowMobileMenu("false");
     }
     setMenuOpen(false);
-    setShowSearch("false");
+    if (showSearch !== "null") {
+      setShowSearch("false");
+    }
+  };
+
+  const handleLogin = async () => {
+    const sessionId = getSessionId();
+    if (sessionId) {
+      navigate("/account");
+    } else {
+      const requestToken = await getRequestToken();
+      if (requestToken) {
+        const redirectUrl = `${window.location.origin}/account`;
+        window.location.href = `https://www.themoviedb.org/authenticate/${requestToken}?redirect_to=${redirectUrl}`;
+      } else {
+        console.error("Failed to get request token.");
+      }
+    }
   };
 
   return (
@@ -115,9 +131,17 @@ const Header = () => {
           <li className="menuItem">
             <HiOutlineSearch onClick={openSearch} />
           </li>
-          <button className="header-button">
-            <FiLogIn />
-            ورود
+          <button className="header-button" onClick={handleLogin}>
+            {getSessionId() ? (
+              <>
+                <FaUser />
+                <p>حساب کاربری</p>
+              </>
+            ) : (
+              <p>
+                ورود <FiLogIn />
+              </p>
+            )}
           </button>
           <li
             className="menuItem"
@@ -157,9 +181,16 @@ const Header = () => {
             size={24}
           />
           <HiOutlineSearch onClick={openSearch} />
-          <button className="header-button">
-            <FiLogIn />
-            ورود
+          <button className="header-button" onClick={handleLogin}>
+            {getSessionId() ? (
+              <>
+                <FaUser />
+              </>
+            ) : (
+              <p>
+                ورود <FiLogIn />
+              </p>
+            )}
           </button>
         </div>
 
