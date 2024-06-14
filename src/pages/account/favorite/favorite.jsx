@@ -44,7 +44,7 @@ const Favorite = ({ setProgress }) => {
         <div className="titleContainer">
           <span className="carouselTitle">
             <MdFavoriteBorder />
-            لیست مورد علاقه
+            مورد علاقه ها
           </span>
           <SwitchTabs data={["فیلم", "سریال"]} onTabChange={onTabChange} />
         </div>
