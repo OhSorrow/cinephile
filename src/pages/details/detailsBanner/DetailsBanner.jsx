@@ -95,7 +95,7 @@ const DetailsBanner = ({ video, crew }) => {
       }
     };
     checkLoginStatus();
-  }, []);
+  }, [id]);
 
   const handleAlertClose = (event, reason) => {
     if (reason === "clickaway") {
