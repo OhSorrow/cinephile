@@ -11,6 +11,7 @@ import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import "./style.scss";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import ContentWrapper from "../../../components/contentWrapper/ContentWrapper";
 import useFetch from "../../../hooks/useFetch";
@@ -35,6 +36,7 @@ const DetailsBanner = ({ video, crew }) => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("");
+  const [loadingFavWatchStatus, setLoadingFavWatchStatus] = useState(true);
   const BASE_URL = "https://api.themoviedb.org/3";
   const TMDB_TOKEN = import.meta.env.VITE_APP_TMDB_TOKEN;
   const sessionId = localStorage.getItem("tmdb_session_id");
@@ -68,21 +70,29 @@ const DetailsBanner = ({ video, crew }) => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       if (sessionId) {
-        const response = await axios.get(
-          `${BASE_URL}/${mediaType}/${id}/account_states`,
-          {
-            headers: {
-              Authorization: `Bearer ${TMDB_TOKEN}`,
-            },
-            params: {
-              session_id: sessionId,
-            },
-          }
-        );
-        console.log(response.data);
-        setIsLoggedIn(true);
-        setIsFav(response.data.favorite);
-        setIsOnWatchList(response.data.watchlist);
+        try {
+          const response = await axios.get(
+            `${BASE_URL}/${mediaType}/${id}/account_states`,
+            {
+              headers: {
+                Authorization: `Bearer ${TMDB_TOKEN}`,
+              },
+              params: {
+                session_id: sessionId,
+              },
+            }
+          );
+          console.log(response.data);
+          setIsLoggedIn(true);
+          setIsFav(response.data.favorite);
+          setIsOnWatchList(response.data.watchlist);
+        } catch (error) {
+          console.error("Error fetching account states:", error);
+        } finally {
+          setLoadingFavWatchStatus(false);
+        }
+      } else {
+        setLoadingFavWatchStatus(false);
       }
     };
     checkLoginStatus();
@@ -97,6 +107,7 @@ const DetailsBanner = ({ video, crew }) => {
 
   const addToFavorites = async () => {
     try {
+      setLoadingFavWatchStatus(true);
       const response = await axios.post(
         `${BASE_URL}/account/${accountId}/favorite`,
         {
@@ -121,10 +132,13 @@ const DetailsBanner = ({ video, crew }) => {
       setAlertMessage("درخواست با خطا مواجه شد!");
       setAlertType("error");
       setAlertOpen(true);
+    } finally {
+      setLoadingFavWatchStatus(false);
     }
   };
   const removeFromFavorites = async () => {
     try {
+      setLoadingFavWatchStatus(true);
       const response = await axios.post(
         `${BASE_URL}/account/${accountId}/favorite`,
         {
@@ -149,11 +163,14 @@ const DetailsBanner = ({ video, crew }) => {
       setAlertMessage("درخواست با خطا مواجه شد!");
       setAlertType("error");
       setAlertOpen(true);
+    } finally {
+      setLoadingFavWatchStatus(false);
     }
   };
 
   const addToWatchlist = async () => {
     try {
+      setLoadingFavWatchStatus(true);
       const response = await axios.post(
         `${BASE_URL}/account/${accountId}/watchlist`,
         {
@@ -178,10 +195,13 @@ const DetailsBanner = ({ video, crew }) => {
       setAlertMessage("درخواست با خطا مواجه شد!");
       setAlertType("error");
       setAlertOpen(true);
+    } finally {
+      setLoadingFavWatchStatus(false);
     }
   };
   const removeFromWatchlist = async () => {
     try {
+      setLoadingFavWatchStatus(true);
       const response = await axios.post(
         `${BASE_URL}/account/${accountId}/watchlist`,
         {
@@ -206,6 +226,8 @@ const DetailsBanner = ({ video, crew }) => {
       setAlertMessage("درخواست با خطا مواجه شد!");
       setAlertType("error");
       setAlertOpen(true);
+    } finally {
+      setLoadingFavWatchStatus(false);
     }
   };
 
@@ -291,97 +313,112 @@ const DetailsBanner = ({ video, crew }) => {
                       </div>
                     </div>
                     <div className="add-to-buttons">
-                      {isFav ? (
-                        <Button
-                          id="favoriteButton"
-                          variant="contained"
-                          startIcon={<FavoriteOutlinedIcon />}
+                      {loadingFavWatchStatus ? (
+                        <CircularProgress
                           sx={{
-                            backgroundColor: "#083775",
-                            fontFamily: "Vazirmatn",
-                            "& .MuiButton-startIcon": {
-                              marginLeft: "5px",
-                              marginRight: "0",
-                            },
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100%",
+                            margin: "auto",
                           }}
-                          onClick={(event) =>
-                            handleButtonClick(
-                              "لطفا ابتدا وارد حساب کاربری خود شوید",
-                              event
-                            )
-                          }
-                        >
-                          لیست مورد علاقه
-                        </Button>
+                        />
                       ) : (
-                        <Button
-                          id="favoriteButton"
-                          variant="contained"
-                          startIcon={<FavoriteBorderOutlinedIcon />}
-                          sx={{
-                            backgroundColor: "#083775",
-                            fontFamily: "Vazirmatn",
-                            "& .MuiButton-startIcon": {
-                              marginLeft: "5px",
-                              marginRight: "0",
-                            },
-                          }}
-                          onClick={(event) =>
-                            handleButtonClick(
-                              "لطفا ابتدا وارد حساب کاربری خود شوید",
-                              event
-                            )
-                          }
-                        >
-                          لیست مورد علاقه
-                        </Button>
-                      )}
-                      {isOnWatchList ? (
-                        <Button
-                          id="watchListButton"
-                          variant="contained"
-                          startIcon={<BookmarkRemoveIcon />}
-                          sx={{
-                            backgroundColor: "#083775",
-                            fontFamily: "Vazirmatn",
-                            "& .MuiButton-startIcon": {
-                              marginLeft: "5px",
-                              marginRight: "0",
-                            },
-                          }}
-                          onClick={(event) =>
-                            handleButtonClick(
-                              "لطفا ابتدا وارد حساب کاربری خود شوید",
-                              event
-                            )
-                          }
-                        >
-                          لیست تماشا
-                        </Button>
-                      ) : (
-                        <Button
-                          id="watchListButton"
-                          variant="contained"
-                          startIcon={<BookmarkAddOutlinedIcon />}
-                          sx={{
-                            backgroundColor: "#083775",
-                            fontFamily: "Vazirmatn",
-                            "& .MuiButton-startIcon": {
-                              marginLeft: "5px",
-                              marginRight: "0",
-                            },
-                          }}
-                          onClick={(event) =>
-                            handleButtonClick(
-                              "لطفا ابتدا وارد حساب کاربری خود شوید",
-                              event
-                            )
-                          }
-                        >
-                          لیست تماشا
-                        </Button>
+                        <>
+                          {isFav ? (
+                            <Button
+                              id="favoriteButton"
+                              variant="contained"
+                              startIcon={<FavoriteOutlinedIcon />}
+                              sx={{
+                                backgroundColor: "#083775",
+                                fontFamily: "Vazirmatn",
+                                "& .MuiButton-startIcon": {
+                                  marginLeft: "5px",
+                                  marginRight: "0",
+                                },
+                              }}
+                              onClick={(event) =>
+                                handleButtonClick(
+                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
+                                  event
+                                )
+                              }
+                            >
+                              لیست مورد علاقه
+                            </Button>
+                          ) : (
+                            <Button
+                              id="favoriteButton"
+                              variant="contained"
+                              startIcon={<FavoriteBorderOutlinedIcon />}
+                              sx={{
+                                backgroundColor: "#083775",
+                                fontFamily: "Vazirmatn",
+                                "& .MuiButton-startIcon": {
+                                  marginLeft: "5px",
+                                  marginRight: "0",
+                                },
+                              }}
+                              onClick={(event) =>
+                                handleButtonClick(
+                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
+                                  event
+                                )
+                              }
+                            >
+                              لیست مورد علاقه
+                            </Button>
+                          )}
+                          {isOnWatchList ? (
+                            <Button
+                              id="watchListButton"
+                              variant="contained"
+                              startIcon={<BookmarkRemoveIcon />}
+                              sx={{
+                                backgroundColor: "#083775",
+                                fontFamily: "Vazirmatn",
+                                "& .MuiButton-startIcon": {
+                                  marginLeft: "5px",
+                                  marginRight: "0",
+                                },
+                              }}
+                              onClick={(event) =>
+                                handleButtonClick(
+                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
+                                  event
+                                )
+                              }
+                            >
+                              لیست تماشا
+                            </Button>
+                          ) : (
+                            <Button
+                              id="watchListButton"
+                              variant="contained"
+                              startIcon={<BookmarkAddOutlinedIcon />}
+                              sx={{
+                                backgroundColor: "#083775",
+                                fontFamily: "Vazirmatn",
+                                "& .MuiButton-startIcon": {
+                                  marginLeft: "5px",
+                                  marginRight: "0",
+                                },
+                              }}
+                              onClick={(event) =>
+                                handleButtonClick(
+                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
+                                  event
+                                )
+                              }
+                            >
+                              لیست تماشا
+                            </Button>
+                          )}
+                        </>
                       )}
                     </div>
+
                     <div className="info">
                       {data.status && (
                         <div className="infoItem">
