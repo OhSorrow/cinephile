@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { HiOutlineSearch } from "react-icons/hi";
-import { SlMenu } from "react-icons/sl";
 import { VscChromeClose } from "react-icons/vsc";
 import { MdSlideshow, MdOutlineMovie } from "react-icons/md";
 import { FiLogIn } from "react-icons/fi";
@@ -8,6 +7,7 @@ import { FaUser } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Squash as Hamburger } from "hamburger-react";
 import "./style.scss";
+import { useSelector } from "react-redux";
 
 import ContentWrapper from "../contentWrapper/ContentWrapper";
 import logo from "../../assets/cinephile.png";
@@ -23,7 +23,7 @@ const Header = () => {
   const [showSearch, setShowSearch] = useState("null");
   const navigate = useNavigate();
   const location = useLocation();
-
+  const sessionId = useSelector((state) => state.session.sessionId);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
@@ -102,7 +102,6 @@ const Header = () => {
   };
 
   const handleLogin = async () => {
-    const sessionId = getSessionId();
     if (sessionId) {
       navigate("/account");
     } else {
@@ -132,15 +131,16 @@ const Header = () => {
             <HiOutlineSearch onClick={openSearch} />
           </li>
           <button className="header-button" onClick={handleLogin}>
-            {getSessionId() ? (
+            {sessionId ? (
               <>
                 <FaUser />
                 <p>حساب کاربری</p>
               </>
             ) : (
-              <p>
-                ورود <FiLogIn />
-              </p>
+              <>
+                <FiLogIn />
+                <p>ورود</p>
+              </>
             )}
           </button>
           <li
@@ -182,14 +182,15 @@ const Header = () => {
           />
           <HiOutlineSearch onClick={openSearch} />
           <button className="header-button" onClick={handleLogin}>
-            {getSessionId() ? (
+            {sessionId ? (
               <>
                 <FaUser />
               </>
             ) : (
-              <p>
-                ورود <FiLogIn />
-              </p>
+              <>
+                <FiLogIn />
+                <p>ورود</p>
+              </>
             )}
           </button>
         </div>

@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
-
+import axios from "axios";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import BookmarkAddOutlinedIcon from "@mui/icons-material/BookmarkAddOutlined";
+import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import "./style.scss";
 
 import ContentWrapper from "../../../components/contentWrapper/ContentWrapper";
@@ -17,12 +24,21 @@ import VideoPopup from "../../../components/videoPopup/VideoPopup";
 import StreamPopup from "../../../components/streamPopup/streamPopup";
 
 const DetailsBanner = ({ video, crew }) => {
-  //states create fro video popup
   const [showStream, setShowStream] = useState(false);
   const [showTrailer, setShowTrailer] = useState(false);
   const [videoId, setVideoId] = useState(null);
   const [streamId, setStreamId] = useState(null);
   const [engOverview, setEngOverview] = useState("");
+  const [isFav, setIsFav] = useState(false);
+  const [isOnWatchList, setIsOnWatchList] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState("");
+  const BASE_URL = "https://api.themoviedb.org/3";
+  const TMDB_TOKEN = import.meta.env.VITE_APP_TMDB_TOKEN;
+  const sessionId = localStorage.getItem("tmdb_session_id");
+  const accountId = localStorage.getItem("account_id");
 
   const { mediaType, id } = useParams();
   const { data, loading } = useFetch(`/${mediaType}/${id}`, "fa-IR");
@@ -48,6 +64,172 @@ const DetailsBanner = ({ video, crew }) => {
       setEngOverview(engData.overview);
     }
   }, [data, engData]);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      if (sessionId) {
+        const response = await axios.get(
+          `${BASE_URL}/${mediaType}/${id}/account_states`,
+          {
+            headers: {
+              Authorization: `Bearer ${TMDB_TOKEN}`,
+            },
+            params: {
+              session_id: sessionId,
+            },
+          }
+        );
+        console.log(response.data);
+        setIsLoggedIn(true);
+        setIsFav(response.data.favorite);
+        setIsOnWatchList(response.data.watchlist);
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlertOpen(false);
+  };
+
+  const addToFavorites = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/account/${accountId}/favorite`,
+        {
+          media_type: mediaType,
+          media_id: id,
+          favorite: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${TMDB_TOKEN}`,
+          },
+        }
+      );
+
+      console.log("Added to favorites:", response.data);
+      setIsFav(true);
+      setAlertMessage("با موفقیت اضافه شد.");
+      setAlertType("success");
+      setAlertOpen(true);
+    } catch (error) {
+      console.error("Error adding to favorites:", error);
+      setAlertMessage("درخواست با خطا مواجه شد!");
+      setAlertType("error");
+      setAlertOpen(true);
+    }
+  };
+  const removeFromFavorites = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/account/${accountId}/favorite`,
+        {
+          media_type: mediaType,
+          media_id: id,
+          favorite: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${TMDB_TOKEN}`,
+          },
+        }
+      );
+
+      setIsFav(false);
+      console.log("Removed form favorites:", response.data);
+      setAlertMessage("با موفقیت حذف شد.");
+      setAlertType("success");
+      setAlertOpen(true);
+    } catch (error) {
+      console.error("Error removing from favorites:", error);
+      setAlertMessage("درخواست با خطا مواجه شد!");
+      setAlertType("error");
+      setAlertOpen(true);
+    }
+  };
+
+  const addToWatchlist = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/account/${accountId}/watchlist`,
+        {
+          media_type: mediaType,
+          media_id: id,
+          watchlist: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${TMDB_TOKEN}`,
+          },
+        }
+      );
+
+      console.log("Added to watchlist:", response.data);
+      setIsOnWatchList(true);
+      setAlertMessage("با موفقیت اضافه شد.");
+      setAlertType("success");
+      setAlertOpen(true);
+    } catch (error) {
+      console.error("Error adding to watchlist:", error);
+      setAlertMessage("درخواست با خطا مواجه شد!");
+      setAlertType("error");
+      setAlertOpen(true);
+    }
+  };
+  const removeFromWatchlist = async () => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/account/${accountId}/watchlist`,
+        {
+          media_type: mediaType,
+          media_id: id,
+          watchlist: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${TMDB_TOKEN}`,
+          },
+        }
+      );
+
+      console.log("Removed from watchlist:", response.data);
+      setIsOnWatchList(false);
+      setAlertMessage("با موفقیت حذف شد.");
+      setAlertType("success");
+      setAlertOpen(true);
+    } catch (error) {
+      console.error("Error removing from watchlist:", error);
+      setAlertMessage("درخواست با خطا مواجه شد!");
+      setAlertType("error");
+      setAlertOpen(true);
+    }
+  };
+
+  const handleButtonClick = (message, event) => {
+    if (!isLoggedIn) {
+      setAlertMessage(message);
+      setAlertType("info");
+      setAlertOpen(true);
+    } else {
+      if (event.target.id === "favoriteButton") {
+        if (isFav) {
+          removeFromFavorites();
+        } else {
+          addToFavorites();
+        }
+      } else if (event.target.id === "watchListButton") {
+        if (isOnWatchList) {
+          removeFromWatchlist();
+        } else {
+          addToWatchlist();
+        }
+      }
+    }
+  };
 
   return (
     <div className="detailsBanner">
@@ -108,6 +290,98 @@ const DetailsBanner = ({ video, crew }) => {
                         {data.overview || engOverview}
                       </div>
                     </div>
+                    <div className="add-to-buttons">
+                      {isFav ? (
+                        <Button
+                          id="favoriteButton"
+                          variant="contained"
+                          startIcon={<FavoriteOutlinedIcon />}
+                          sx={{
+                            backgroundColor: "#083775",
+                            fontFamily: "Vazirmatn",
+                            "& .MuiButton-startIcon": {
+                              marginLeft: "5px",
+                              marginRight: "0",
+                            },
+                          }}
+                          onClick={(event) =>
+                            handleButtonClick(
+                              "لطفا ابتدا وارد حساب کاربری خود شوید",
+                              event
+                            )
+                          }
+                        >
+                          لیست مورد علاقه
+                        </Button>
+                      ) : (
+                        <Button
+                          id="favoriteButton"
+                          variant="contained"
+                          startIcon={<FavoriteBorderOutlinedIcon />}
+                          sx={{
+                            backgroundColor: "#083775",
+                            fontFamily: "Vazirmatn",
+                            "& .MuiButton-startIcon": {
+                              marginLeft: "5px",
+                              marginRight: "0",
+                            },
+                          }}
+                          onClick={(event) =>
+                            handleButtonClick(
+                              "لطفا ابتدا وارد حساب کاربری خود شوید",
+                              event
+                            )
+                          }
+                        >
+                          لیست مورد علاقه
+                        </Button>
+                      )}
+                      {isOnWatchList ? (
+                        <Button
+                          id="watchListButton"
+                          variant="contained"
+                          startIcon={<BookmarkRemoveIcon />}
+                          sx={{
+                            backgroundColor: "#083775",
+                            fontFamily: "Vazirmatn",
+                            "& .MuiButton-startIcon": {
+                              marginLeft: "5px",
+                              marginRight: "0",
+                            },
+                          }}
+                          onClick={(event) =>
+                            handleButtonClick(
+                              "لطفا ابتدا وارد حساب کاربری خود شوید",
+                              event
+                            )
+                          }
+                        >
+                          لیست تماشا
+                        </Button>
+                      ) : (
+                        <Button
+                          id="watchListButton"
+                          variant="contained"
+                          startIcon={<BookmarkAddOutlinedIcon />}
+                          sx={{
+                            backgroundColor: "#083775",
+                            fontFamily: "Vazirmatn",
+                            "& .MuiButton-startIcon": {
+                              marginLeft: "5px",
+                              marginRight: "0",
+                            },
+                          }}
+                          onClick={(event) =>
+                            handleButtonClick(
+                              "لطفا ابتدا وارد حساب کاربری خود شوید",
+                              event
+                            )
+                          }
+                        >
+                          لیست تماشا
+                        </Button>
+                      )}
+                    </div>
                     <div className="info">
                       {data.status && (
                         <div className="infoItem">
@@ -132,8 +406,6 @@ const DetailsBanner = ({ video, crew }) => {
                         </div>
                       )}
                     </div>
-
-                    {/* director data fetching */}
                     {director?.length > 0 && (
                       <div className="info">
                         <span className="text bold">کارگردان:</span>
@@ -147,7 +419,6 @@ const DetailsBanner = ({ video, crew }) => {
                         </span>
                       </div>
                     )}
-                    {/* writer data fetching */}
                     {writer?.length > 0 && (
                       <div className="info">
                         <span className="text bold">نویسنده:</span>
@@ -161,7 +432,6 @@ const DetailsBanner = ({ video, crew }) => {
                         </span>
                       </div>
                     )}
-                    {/* creator data fetching for tv shows */}
                     {data?.created_by?.length > 0 && (
                       <div className="info">
                         <span className="text bold">سازندگان:</span>
@@ -191,6 +461,20 @@ const DetailsBanner = ({ video, crew }) => {
                   mediaType={mediaType}
                 />
               </ContentWrapper>
+              <Snackbar
+                open={alertOpen}
+                autoHideDuration={5000}
+                onClose={handleAlertClose}
+                anchorOrigin={{ vertical: "top", horizontal: "left" }}
+              >
+                <Alert
+                  onClose={handleAlertClose}
+                  severity={alertType}
+                  sx={{ fontFamily: "Vazirmatn", gap: "6px" }}
+                >
+                  {alertMessage}
+                </Alert>
+              </Snackbar>
             </React.Fragment>
           )}
         </>

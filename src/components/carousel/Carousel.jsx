@@ -20,6 +20,7 @@ const Carousel = ({ data, loading, endpoint, title, type }) => {
   const { url } = useSelector((state) => state.home);
   const navigate = useNavigate();
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [maxScrollWidth, setMaxScrollWidth] = useState(0);
 
   const navigation = (dir) => {
     const container = carouselContainer.current;
@@ -36,17 +37,30 @@ const Carousel = ({ data, loading, endpoint, title, type }) => {
 
   useEffect(() => {
     const container = carouselContainer.current;
-    const handleScroll = () => {
-      setScrollPosition(container.scrollLeft);
+    const updateMaxScrollWidth = () => {
+      setMaxScrollWidth(container?.scrollWidth - container?.offsetWidth);
     };
 
-    container.addEventListener("scroll", handleScroll);
+    updateMaxScrollWidth();
+    window.addEventListener("resize", updateMaxScrollWidth);
+    return () => {
+      window.removeEventListener("resize", updateMaxScrollWidth);
+    };
+  }, [data]);
+
+  useEffect(() => {
+    const container = carouselContainer.current;
+    const handleScroll = () => {
+      setScrollPosition(container?.scrollLeft);
+    };
+
+    container?.addEventListener("scroll", handleScroll);
 
     // Clean up the event listener
     return () => {
-      container.removeEventListener("scroll", handleScroll);
+      container?.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [scrollPosition]);
 
   //skeleton item
   const skItem = () => {
@@ -71,7 +85,7 @@ const Carousel = ({ data, loading, endpoint, title, type }) => {
             onClick={() => navigation("right")}
           />
         )}
-        {scrollPosition > -3370 && (
+        {scrollPosition > maxScrollWidth * -1 && (
           <BsFillArrowLeftCircleFill
             className="carouselLeftNav arrow"
             onClick={() => navigation("left")}
@@ -97,7 +111,7 @@ const Carousel = ({ data, loading, endpoint, title, type }) => {
                     <CircleRating rating={item.vote_average.toFixed(1)} />
                     <Genres
                       data={item.genre_ids.slice(0, 2)}
-                      type={item.media_type}
+                      type={item.media_type ? item.media_type : endpoint}
                     />
                   </div>
                   <div className="textBlock">

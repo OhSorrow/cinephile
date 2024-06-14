@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
+import Favorite from "./favorite/favorite";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import ContentWrapper from "../../components/contentWrapper/ContentWrapper";
 import "./style.scss";
+import { FiLogIn } from "react-icons/fi";
+import profile from "../../assets/profile.png";
+import { setSessionId } from "../../store/sessionSlice";
+import { store } from "../../store/store"; // Import the store variable
+
 const BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_TOKEN = import.meta.env.VITE_APP_TMDB_TOKEN;
 import Img from "../../components/lazyLoadImage/img";
-const Account = () => {
+import Watchlist from "./watchlist/watchlist";
+const Account = ({ setProgress }) => {
   const location = useLocation();
   const [userData, setUserData] = useState(null);
 
@@ -41,6 +48,7 @@ const Account = () => {
         },
       });
       setUserData(response.data);
+      localStorage.setItem("account_id", response.data.id);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -59,11 +67,11 @@ const Account = () => {
           },
         }
       );
-      console.log(response);
       const sessionId = response.data.session_id;
       console.log("Session ID:", sessionId);
       // Store the session ID in localStorage
-      localStorage.setItem("tmdb_session_id", sessionId);
+      localStorage.setItem("tmdb_session_id", response.data.session_id);
+      store.dispatch(setSessionId(response.data.session_id)); // Dispatch the action
 
       // Fetch user data with the new session ID
       fetchUserData(sessionId);
@@ -72,22 +80,41 @@ const Account = () => {
     }
   };
 
+  const handleLogout = () => {
+    window.location.href = "/";
+    localStorage.removeItem("tmdb_session_id");
+    localStorage.removeItem("account_id");
+    setTimeout(() => {
+      setUserData(null);
+    }, 100);
+  };
+
   return (
     <div className="account-details">
       <ContentWrapper>
         {userData ? (
-          <div>
+          <>
             <div className="user-image">
-              <Img
-                src={`https://image.tmdb.org/t/p/w200${userData.avatar.tmdb.avatar_path}`}
-                alt={userData.name}
-              />
-              <div>
+              {userData.avatar.tmdb.avatar_path ? (
+                <Img
+                  src={`https://image.tmdb.org/t/p/w200${userData.avatar.tmdb.avatar_path}`}
+                  alt={userData.name}
+                />
+              ) : (
+                <Img src={profile}></Img>
+              )}
+              <div className="details">
                 <p>{userData.name}</p>
                 <p className="username">{userData.username}</p>
+                <button onClick={handleLogout}>
+                  <FiLogIn />
+                  خروج
+                </button>
               </div>
             </div>
-          </div>
+            <Favorite setProgress={setProgress} />
+            <Watchlist setProgress={setProgress} />
+          </>
         ) : (
           <div className="account-skeleton">
             <ContentWrapper>
@@ -95,6 +122,8 @@ const Account = () => {
                 <div className="img-skeleton"></div>
                 <div className="details-skeleton"></div>
               </div>
+              <div className="carousel-skeleton"> </div>
+              <div className="carousel-skeleton"> </div>
             </ContentWrapper>
           </div>
         )}
