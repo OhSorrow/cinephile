@@ -82,7 +82,6 @@ const DetailsBanner = ({ video, crew }) => {
               },
             }
           );
-          console.log(response.data);
           setIsLoggedIn(true);
           setIsFav(response.data.favorite);
           setIsOnWatchList(response.data.watchlist);
