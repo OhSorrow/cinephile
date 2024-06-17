@@ -22,6 +22,9 @@
     .listItem {
       text-align: center;
       color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       .profileImg {
         width: 140px;
         height: 208px;
