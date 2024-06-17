@@ -12,7 +12,7 @@ const SearchResult = ({ setProgress }) => {
   //creating states
   const [data, setData] = useState(null);
   const [pageNum, setPageNum] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { query } = useParams();
 
   const fetchInitialData = () => {
