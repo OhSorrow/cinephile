@@ -231,18 +231,22 @@ const DetailsBanner = ({ video, crew }) => {
   };
 
   const handleButtonClick = (message, event) => {
+    const targetId = event.target.id || event.currentTarget.id;
     if (!isLoggedIn) {
       setAlertMessage(message);
       setAlertType("info");
       setAlertOpen(true);
     } else {
-      if (event.target.id === "favoriteButton") {
+      if (targetId === "favoriteButton" || targetId === "favoriteIcon") {
         if (isFav) {
           removeFromFavorites();
         } else {
           addToFavorites();
         }
-      } else if (event.target.id === "watchListButton") {
+      } else if (
+        targetId === "watchListButton" ||
+        targetId === "watchlistIcon"
+      ) {
         if (isOnWatchList) {
           removeFromWatchlist();
         } else {
@@ -324,96 +328,61 @@ const DetailsBanner = ({ video, crew }) => {
                         />
                       ) : (
                         <>
-                          {isFav ? (
-                            <Button
-                              id="favoriteButton"
-                              variant="contained"
-                              startIcon={<FavoriteOutlinedIcon />}
-                              sx={{
-                                backgroundColor: "#083775",
-                                fontFamily: "Vazirmatn",
-                                "& .MuiButton-startIcon": {
-                                  marginLeft: "5px",
-                                  marginRight: "0",
-                                },
-                              }}
-                              onClick={(event) =>
-                                handleButtonClick(
-                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
-                                  event
-                                )
-                              }
-                            >
-                              لیست مورد علاقه
-                            </Button>
-                          ) : (
-                            <Button
-                              id="favoriteButton"
-                              variant="contained"
-                              startIcon={<FavoriteBorderOutlinedIcon />}
-                              sx={{
-                                backgroundColor: "#083775",
-                                fontFamily: "Vazirmatn",
-                                "& .MuiButton-startIcon": {
-                                  marginLeft: "5px",
-                                  marginRight: "0",
-                                },
-                              }}
-                              onClick={(event) =>
-                                handleButtonClick(
-                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
-                                  event
-                                )
-                              }
-                            >
-                              لیست مورد علاقه
-                            </Button>
-                          )}
-                          {isOnWatchList ? (
-                            <Button
-                              id="watchListButton"
-                              variant="contained"
-                              startIcon={<BookmarkRemoveIcon />}
-                              sx={{
-                                backgroundColor: "#083775",
-                                fontFamily: "Vazirmatn",
-                                "& .MuiButton-startIcon": {
-                                  marginLeft: "5px",
-                                  marginRight: "0",
-                                },
-                              }}
-                              onClick={(event) =>
-                                handleButtonClick(
-                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
-                                  event
-                                )
-                              }
-                            >
-                              لیست تماشا
-                            </Button>
-                          ) : (
-                            <Button
-                              id="watchListButton"
-                              variant="contained"
-                              startIcon={<BookmarkAddOutlinedIcon />}
-                              sx={{
-                                backgroundColor: "#083775",
-                                fontFamily: "Vazirmatn",
-                                "& .MuiButton-startIcon": {
-                                  marginLeft: "5px",
-                                  marginRight: "0",
-                                },
-                              }}
-                              onClick={(event) =>
-                                handleButtonClick(
-                                  "لطفا ابتدا وارد حساب کاربری خود شوید",
-                                  event
-                                )
-                              }
-                            >
-                              لیست تماشا
-                            </Button>
-                          )}
+                          <Button
+                            id="favoriteButton"
+                            variant="contained"
+                            startIcon={
+                              isFav ? (
+                                <FavoriteOutlinedIcon id="favoriteIcon" />
+                              ) : (
+                                <FavoriteBorderOutlinedIcon id="favoriteIcon" />
+                              )
+                            }
+                            sx={{
+                              backgroundColor: "#083775",
+                              fontFamily: "Vazirmatn",
+                              "& .MuiButton-startIcon": {
+                                marginLeft: "5px",
+                                marginRight: "0",
+                              },
+                            }}
+                            onClick={(event) =>
+                              handleButtonClick(
+                                "لطفا ابتدا وارد حساب کاربری خود شوید",
+                                event
+                              )
+                            }
+                          >
+                            لیست مورد علاقه
+                          </Button>
+
+                          <Button
+                            id="watchListButton"
+                            variant="contained"
+                            startIcon={
+                              isOnWatchList ? (
+                                <BookmarkRemoveIcon id="watchlistIcon" />
+                              ) : (
+                                <BookmarkAddOutlinedIcon id="watchlistIcon" />
+                              )
+                            }
+                            sx={{
+                              backgroundColor: "#083775",
+                              fontFamily: "Vazirmatn",
+                              "& .MuiButton-startIcon": {
+                                marginLeft: "5px",
+                                marginRight: "0",
+                              },
+                            }}
+                            onClick={(event) =>
+                              handleButtonClick(
+                                "لطفا ابتدا وارد حساب کاربری خود شوید",
+                                event
+                              )
+                            }
+                          >
+                            لیست تماشا
+                          </Button>
                         </>
                       )}
                     </div>
