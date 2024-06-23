@@ -16,11 +16,11 @@ This project is a web application built using React.js, with Vite as the build t
     - [Running the Development Server](#running-the-development-server)
     - [Building for Production](#building-for-production)
     - [Previewing the Production Build](#previewing-the-production-build)
+  - [Screenshot](#screenshot)
   - [Project Structure](#project-structure)
   - [Dependencies](#dependencies)
   - [Scripts](#scripts)
   - [Contributing](#contributing)
-  - [License](#license)
 
 ## Features
 
@@ -93,6 +93,10 @@ yarn preview
 
 This will start a local server to preview the production build.
 
+## Screenshot
+
+![Screenshot of the Weather App](./src/screenshots/demo.png)
+
 ## Project Structure
 
 ```
@@ -145,12 +149,3 @@ This will start a local server to preview the production build.
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request for any changes.
-
-## License
-
-This project is licensed under the MIT License.
-
-```
-
-Feel free to customize this README to better fit your project's specifics and requirements.
-```
